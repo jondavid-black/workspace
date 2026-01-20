@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sdlc-pod
+  labels:
+    app: sdlc-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sdlc-pod
+  template:
+    metadata:
+      labels:
+        app: sdlc-pod
+    spec:
+      containers:
+        - name: vscode
+          image: codercom/code-server:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PASSWORD
+              value: "password"
+          volumeMounts:
+            - name: shared-data
+              mountPath: /home/coder/project
+        
+        - name: syson
+          image: python:3.12-slim
+          command: ["python", "-m", "http.server", "8081"]
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+
+        - name: penpot-frontend
+          image: python:3.12-slim
+          command: ["python", "-m", "http.server", "8082"]
+          ports:
+            - containerPort: 8082
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+
+        - name: penpot-backend
+          image: penpotapp/backend:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              until nc -z localhost 5432; do
+                echo "waiting for postgres..."
+                sleep 2
+              done
+              /update.sh # Penpot often has an update script for migrations
+              /run.sh
+          ports:
+            - containerPort: 6060
+          env:
+            - name: PENPOT_DATABASE_URI
+              value: "postgresql://penpot:penpot@localhost/penpot"
+            - name: PENPOT_REDIS_URI
+              value: "redis://localhost/0"
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+
+        - name: opencode
+          image: python:3.12-slim
+          command: ["python", "-m", "http.server", "8083"]
+          ports:
+            - containerPort: 8083
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+
+        # Supporting containers for PenPot
+        - name: redis
+          image: redis:7
+        
+        - name: postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_DB
+              value: penpot
+            - name: POSTGRES_USER
+              value: penpot
+            - name: POSTGRES_PASSWORD
+              value: penpot
+
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: sdlc-shared-data
