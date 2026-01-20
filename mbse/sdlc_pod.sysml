@@ -68,7 +68,7 @@ package SDLCPodModel {
     part def PenPot {
         port storagePort;
         port webPort;
-        attribute url : String;
+        attribute port : Integer = 8082;
         attribute ingressPath : String = "/penpot";
     }
 

@@ -38,8 +38,6 @@ def get_minikube_url(service_name, port_name):
             return None
 
         local_port = target_port
-        if target_port == 80:
-            local_port = 8082
 
         if not is_port_open(local_port):
             print(

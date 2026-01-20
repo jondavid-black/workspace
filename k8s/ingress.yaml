@@ -33,7 +33,7 @@ spec:
           service:
             name: sdlc-service
             port:
-              number: 80
+              number: 8082
   - host: opencode.sdlc.local
     http:
       paths:
