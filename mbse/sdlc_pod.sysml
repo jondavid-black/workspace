@@ -82,7 +82,8 @@ package SDLCPodModel {
     part def OpenCode {
         port storagePort;
         port webPort;
-        attribute url : String;
+        attribute image : String = "ghcr.io/anomalyco/opencode:latest";
+        attribute runtime : String = "Node.js";
         attribute ingressPath : String = "/";
     }
 
