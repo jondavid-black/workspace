@@ -26,15 +26,37 @@ spec:
             - name: shared-data
               mountPath: /home/coder/project
         
-        - name: syson
-          image: python:3.12-slim
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              echo "<html><body><h1>SysON SysML v2 Engineering Baseline</h1><ul><li><a href='workspace/mbse/sdlc_pod.sysml'>Project SysML Baseline</a></li></ul></body></html>" > /data/index.html
-              cd /data && python -m http.server 8081
+        - name: syson-db
+          image: postgres:15
+          command: ["docker-entrypoint.sh"]
+          args: ["-p", "5433"]
+          env:
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_USER
+              value: username
+            - name: POSTGRES_PASSWORD
+              value: password
+          volumeMounts:
+            - name: shared-data
+              mountPath: /var/lib/postgresql/data
+              subPath: syson-db
+
+        - name: syson-app
+          image: eclipsesyson/syson:v2025.12.0
           ports:
             - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://localhost:5433/postgres
+            - name: SPRING_DATASOURCE_USERNAME
+              value: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: password
+            - name: SIRIUS_COMPONENTS_CORS_ALLOWEDORIGINPATTERNS
+              value: "*"
+            - name: SERVER_PORT
+              value: "8081"
           volumeMounts:
             - name: shared-data
               mountPath: /data
@@ -92,6 +114,10 @@ spec:
               value: penpot
             - name: POSTGRES_PASSWORD
               value: penpot
+          volumeMounts:
+            - name: shared-data
+              mountPath: /var/lib/postgresql/data
+              subPath: penpot-db
 
       volumes:
         - name: shared-data

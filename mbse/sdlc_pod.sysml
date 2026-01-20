@@ -41,10 +41,28 @@ package SDLCPodModel {
     }
 
     part def SysON {
+        part app : SysONApp;
+        part db : SysONDB;
+        
         port storagePort;
         port webPort;
-        attribute url : String;
-        attribute ingressPath : String = "/syson";
+        
+        connect app.dbPort to db.dbPort;
+        connect app.storagePort to storagePort;
+        connect app.webPort to webPort;
+    }
+
+    part def SysONApp {
+        port storagePort;
+        port webPort;
+        port dbPort;
+        attribute image : String = "eclipsesyson/syson:v2025.12.0";
+    }
+
+    part def SysONDB {
+        port dbPort;
+        attribute image : String = "postgres:15";
+        attribute port : Integer = 5433;
     }
 
     part def PenPot {
