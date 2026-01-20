@@ -25,32 +25,53 @@ package SDLCPodModel {
         part vscode : VSCode;
         part opencode : OpenCode;
         part storage : PersistentVolume;
+        part ingress : IngressController;
 
         /* Connections for shared storage */
         connect syson.storagePort to storage.accessPort;
         connect penpot.storagePort to storage.accessPort;
         connect vscode.storagePort to storage.accessPort;
         connect opencode.storagePort to storage.accessPort;
+
+        /* Connections for web access */
+        connect syson.webPort to ingress.backendPort;
+        connect penpot.webPort to ingress.backendPort;
+        connect vscode.webPort to ingress.backendPort;
+        connect opencode.webPort to ingress.backendPort;
     }
 
     part def SysON {
         port storagePort;
+        port webPort;
         attribute url : String;
+        attribute ingressPath : String = "/syson";
     }
 
     part def PenPot {
         port storagePort;
+        port webPort;
         attribute url : String;
+        attribute ingressPath : String = "/penpot";
     }
 
     part def VSCode {
         port storagePort;
+        port webPort;
         attribute url : String;
+        attribute ingressPath : String = "/vscode";
     }
 
     part def OpenCode {
         port storagePort;
+        port webPort;
         attribute url : String;
+        attribute ingressPath : String = "/";
+    }
+
+    part def IngressController {
+        port backendPort;
+        port publicPort;
+        attribute host : String = "sdlc.local";
     }
 
     part def PersistentVolume {

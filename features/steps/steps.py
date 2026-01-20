@@ -104,7 +104,6 @@ def step_then_syson_accessible(context):
     url = get_minikube_url("sdlc-service", "syson")
     assert url is not None, "Failed to get SysON URL"
     session = get_session()
-    # Accept 200-499 as "accessible" for smoke test
     response = session.get(url, timeout=15, allow_redirects=True)
     assert response.status_code < 500, (
         f"SysON not accessible at {url}, status: {response.status_code}"
