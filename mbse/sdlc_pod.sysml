@@ -66,16 +66,64 @@ package SDLCPodModel {
     }
 
     part def PenPot {
+        part frontend : PenPotFrontend;
+        part backend : PenPotBackend;
+        part exporter : PenPotExporter;
+        part postgres : PenPotPostgres;
+        part valkey : PenPotValkey;
+        part mailcatch : PenPotMailcatch;
+
         port storagePort;
         port webPort;
-        attribute port : Integer = 8082;
-        attribute ingressPath : String = "/penpot";
+
+        connect frontend.storagePort to storagePort;
+        connect frontend.webPort to webPort;
+        connect backend.dbPort to postgres.dbPort;
+        connect backend.cachePort to valkey.cachePort;
+        connect backend.smtpPort to mailcatch.smtpPort;
+        connect exporter.cachePort to valkey.cachePort;
+        
+        attribute port : Integer = 8080;
+    }
+
+    part def PenPotFrontend {
+        port storagePort;
+        port webPort;
+        attribute image : String = "penpotapp/frontend:latest";
+    }
+
+    part def PenPotBackend {
+        port dbPort;
+        port cachePort;
+        port smtpPort;
+        attribute image : String = "penpotapp/backend:latest";
+    }
+
+    part def PenPotExporter {
+        port cachePort;
+        attribute image : String = "penpotapp/exporter:latest";
+    }
+
+    part def PenPotPostgres {
+        port dbPort;
+        attribute image : String = "postgres:15";
+    }
+
+    part def PenPotValkey {
+        port cachePort;
+        attribute image : String = "valkey/valkey:8.1";
+    }
+
+    part def PenPotMailcatch {
+        port smtpPort;
+        port webPort;
+        attribute image : String = "sj26/mailcatcher:latest";
     }
 
     part def VSCode {
         port storagePort;
         port webPort;
-        attribute url : String;
+        attribute port : Integer = 8084;
         attribute ingressPath : String = "/vscode";
     }
 

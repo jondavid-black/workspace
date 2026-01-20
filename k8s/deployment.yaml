@@ -17,15 +17,16 @@ spec:
       containers:
         - name: vscode
           image: codercom/code-server:latest
+          args: ["--bind-addr", "0.0.0.0:8084", "--auth", "password"]
           ports:
-            - containerPort: 8080
+            - containerPort: 8084
           env:
             - name: PASSWORD
               value: "password"
           volumeMounts:
             - name: shared-data
               mountPath: /home/coder/project
-        
+
         - name: syson-db
           image: postgres:15
           command: ["docker-entrypoint.sh"]
@@ -62,35 +63,104 @@ spec:
               mountPath: /data
 
         - name: penpot-frontend
-          image: python:3.12-slim
-          command: ["python", "-m", "http.server", "8082"]
+          image: penpotapp/frontend:latest
           ports:
-            - containerPort: 8082
+            - containerPort: 8080
+          env:
+            - name: PENPOT_FLAGS
+              value: "disable-email-verification enable-smtp enable-prepl-server disable-secure-session-cookies"
+            - name: PENPOT_HTTP_SERVER_MAX_BODY_SIZE
+              value: "31457280"
+            - name: PENPOT_HTTP_SERVER_MAX_MULTIPART_BODY_SIZE
+              value: "367001600"
+            - name: PENPOT_BACKEND_URI
+              value: "http://localhost:6060"
+            - name: PENPOT_EXPORTER_URI
+              value: "http://localhost:6061"
           volumeMounts:
             - name: shared-data
-              mountPath: /data
+              mountPath: /opt/data/assets
+              subPath: penpot-assets
 
         - name: penpot-backend
           image: penpotapp/backend:latest
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              until nc -z localhost 5432; do
-                echo "waiting for postgres..."
-                sleep 2
-              done
-              /update.sh # Penpot often has an update script for migrations
-              /run.sh
           ports:
             - containerPort: 6060
           env:
+            - name: PENPOT_FLAGS
+              value: "disable-email-verification enable-smtp enable-prepl-server disable-secure-session-cookies"
+            - name: PENPOT_PUBLIC_URI
+              value: "http://localhost:8080"
+            - name: PENPOT_HTTP_SERVER_MAX_BODY_SIZE
+              value: "31457280"
+            - name: PENPOT_HTTP_SERVER_MAX_MULTIPART_BODY_SIZE
+              value: "367001600"
+            - name: PENPOT_SECRET_KEY
+              value: "change-this-insecure-key"
             - name: PENPOT_DATABASE_URI
-              value: "postgresql://penpot:penpot@localhost/penpot"
+              value: "postgresql://localhost:5432/penpot"
+            - name: PENPOT_DATABASE_USERNAME
+              value: "penpot"
+            - name: PENPOT_DATABASE_PASSWORD
+              value: "penpot"
             - name: PENPOT_REDIS_URI
-              value: "redis://localhost/0"
+              value: "redis://localhost:6379/0"
+            - name: PENPOT_OBJECTS_STORAGE_BACKEND
+              value: "fs"
+            - name: PENPOT_OBJECTS_STORAGE_FS_DIRECTORY
+              value: "/opt/data/assets"
+            - name: PENPOT_TELEMETRY_ENABLED
+              value: "true"
+            - name: PENPOT_SMTP_DEFAULT_FROM
+              value: "no-reply@example.com"
+            - name: PENPOT_SMTP_HOST
+              value: "localhost"
+            - name: PENPOT_SMTP_PORT
+              value: "1025"
           volumeMounts:
             - name: shared-data
-              mountPath: /data
+              mountPath: /opt/data/assets
+              subPath: penpot-assets
+
+        - name: penpot-exporter
+          image: penpotapp/exporter:latest
+          ports:
+            - containerPort: 6061
+          env:
+            - name: PENPOT_SECRET_KEY
+              value: "change-this-insecure-key"
+            - name: PENPOT_PUBLIC_URI
+              value: "http://localhost:8080"
+            - name: PENPOT_REDIS_URI
+              value: "redis://localhost:6379/0"
+
+        - name: penpot-postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_INITDB_ARGS
+              value: "--data-checksums"
+            - name: POSTGRES_DB
+              value: penpot
+            - name: POSTGRES_USER
+              value: penpot
+            - name: POSTGRES_PASSWORD
+              value: penpot
+          volumeMounts:
+            - name: shared-data
+              mountPath: /var/lib/postgresql/data
+              subPath: penpot-db-v3
+
+        - name: penpot-valkey
+          image: valkey/valkey:8.1
+          env:
+            - name: VALKEY_EXTRA_FLAGS
+              value: "--maxmemory 128mb --maxmemory-policy volatile-lfu"
+
+        - name: penpot-mailcatch
+          image: sj26/mailcatcher:latest
+          ports:
+            - containerPort: 1080
+            - containerPort: 1025
 
         - name: opencode
           image: ghcr.io/anomalyco/opencode:latest
@@ -101,24 +171,6 @@ spec:
           volumeMounts:
             - name: shared-data
               mountPath: /data
-
-        # Supporting containers for PenPot
-        - name: redis
-          image: redis:7
-        
-        - name: postgres
-          image: postgres:15
-          env:
-            - name: POSTGRES_DB
-              value: penpot
-            - name: POSTGRES_USER
-              value: penpot
-            - name: POSTGRES_PASSWORD
-              value: penpot
-          volumeMounts:
-            - name: shared-data
-              mountPath: /var/lib/postgresql/data
-              subPath: penpot-db
 
       volumes:
         - name: shared-data

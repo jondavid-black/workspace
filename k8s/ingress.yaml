@@ -13,7 +13,7 @@ spec:
           service:
             name: sdlc-service
             port:
-              number: 8080
+              number: 8084
   - host: syson.sdlc.local
     http:
       paths:
@@ -33,7 +33,7 @@ spec:
           service:
             name: sdlc-service
             port:
-              number: 8082
+              number: 8080
   - host: opencode.sdlc.local
     http:
       paths:

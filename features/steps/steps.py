@@ -66,7 +66,7 @@ def get_minikube_url(service_name, port_name):
 
 
 @given("the SDLC Pod is deployed to Minikube")
-def step_given_pod_deployed(context):
+def step_given_pod_deployed_sdlc(context):
     config.load_kube_config()
     v1 = client.CoreV1Api()
 
@@ -87,7 +87,7 @@ def step_given_pod_deployed(context):
 
 
 @then("the VS Code URL should be accessible")
-def step_then_vscode_accessible(context):
+def step_then_vscode_accessible_sdlc(context):
     url = get_minikube_url("sdlc-service", "vscode")
     assert url is not None, "Failed to get VS Code URL"
     session = get_session()
@@ -98,7 +98,7 @@ def step_then_vscode_accessible(context):
 
 
 @then("the SysON URL should be accessible")
-def step_then_syson_accessible(context):
+def step_then_syson_accessible_sdlc(context):
     url = get_minikube_url("sdlc-service", "syson")
     assert url is not None, "Failed to get SysON URL"
     session = get_session()
@@ -109,7 +109,7 @@ def step_then_syson_accessible(context):
 
 
 @then("the PenPot URL should be accessible")
-def step_then_penpot_accessible(context):
+def step_then_penpot_accessible_sdlc(context):
     url = get_minikube_url("sdlc-service", "penpot")
     assert url is not None, "Failed to get PenPot URL"
     session = get_session()
@@ -120,7 +120,7 @@ def step_then_penpot_accessible(context):
 
 
 @then("the OpenCode URL should be accessible")
-def step_then_opencode_accessible(context):
+def step_then_opencode_accessible_sdlc(context):
     url = get_minikube_url("sdlc-service", "opencode")
     assert url is not None, "Failed to get OpenCode URL"
     session = get_session()

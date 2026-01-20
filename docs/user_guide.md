@@ -38,9 +38,9 @@ This project provides a Kubernetes Pod containing a suite of containers to suppo
 
 Since the pod is running in Minikube, you can use port-forwarding to access the tools locally:
 
-- **VS Code:** `kubectl port-forward svc/sdlc-service 8080:8080` -> [http://localhost:8080](http://localhost:8080)
+- **VS Code:** `kubectl port-forward svc/sdlc-service 8084:8084` -> [http://localhost:8084](http://localhost:8084)
 - **SysON:** `kubectl port-forward svc/sdlc-service 8081:8081` -> [http://localhost:8081](http://localhost:8081)
-- **PenPot:** `kubectl port-forward svc/sdlc-service 8082:8082` -> [http://localhost:8082](http://localhost:8082)
+- **PenPot:** `kubectl port-forward svc/sdlc-service 8080:8080` -> [http://localhost:8080](http://localhost:8080)
 - **OpenCode:** `kubectl port-forward svc/sdlc-service 8083:8083` -> [http://localhost:8083](http://localhost:8083)
 
 ## Scaling to Zero
