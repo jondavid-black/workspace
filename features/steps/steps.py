@@ -2,17 +2,28 @@ from behave import given, then
 import requests
 import subprocess
 import time
+import socket
 from kubernetes import client, config
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
-import os
-import signal
+def is_port_open(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("localhost", port)) == 0
+
+
+def get_session():
+    session = requests.Session()
+    retry = Retry(connect=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
 
 
 def get_minikube_url(service_name, port_name):
     try:
-        # Since minikube IP is unreachable directly, we use port-forwarding
-        # We find the local port that we've forwarded
         v1 = client.CoreV1Api()
         svc = v1.read_namespaced_service(service_name, "default")
 
@@ -23,28 +34,32 @@ def get_minikube_url(service_name, port_name):
                 break
 
         if not target_port:
+            print(f"Port {port_name} not found in service {service_name}")
             return None
 
-        # Start port-forward in background if not already running
-        # We'll use a fixed local port for each service port for simplicity
         local_port = target_port
         if target_port == 80:
-            local_port = 8082  # avoid privileged ports
+            local_port = 8082
 
-        # We'll just run port-forward and hope for the best, or check if it's already running
-        subprocess.Popen(
-            [
-                "/home/jd/bin/kubectl",
-                "port-forward",
-                f"service/{service_name}",
-                f"{local_port}:{target_port}",
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-
-        # Give it a second to start
-        time.sleep(2)
+        if not is_port_open(local_port):
+            print(
+                f"Starting port-forward for {port_name} on local port {local_port}..."
+            )
+            subprocess.Popen(
+                [
+                    "/home/jd/bin/kubectl",
+                    "port-forward",
+                    f"service/{service_name}",
+                    f"{local_port}:{target_port}",
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            # Wait for port to open
+            for _ in range(10):
+                if is_port_open(local_port):
+                    break
+                time.sleep(1)
 
         return f"http://localhost:{local_port}"
     except Exception as e:
@@ -68,7 +83,7 @@ def step_given_pod_deployed(context):
             status.ready for status in (pods.items[0].status.container_statuses or [])
         ):
             return
-        time.sleep(10)
+        time.sleep(5)
 
     raise Exception("Timeout waiting for SDLC Pod to be ready")
 
@@ -77,7 +92,8 @@ def step_given_pod_deployed(context):
 def step_then_vscode_accessible(context):
     url = get_minikube_url("sdlc-service", "vscode")
     assert url is not None, "Failed to get VS Code URL"
-    response = requests.get(url, timeout=10)
+    session = get_session()
+    response = session.get(url, timeout=15)
     assert response.status_code == 200, (
         f"VS Code not accessible at {url}, status: {response.status_code}"
     )
@@ -87,9 +103,9 @@ def step_then_vscode_accessible(context):
 def step_then_syson_accessible(context):
     url = get_minikube_url("sdlc-service", "syson")
     assert url is not None, "Failed to get SysON URL"
-    # Note: Using allow_redirects=True as some apps redirect to login
-    response = requests.get(url, timeout=10, allow_redirects=True)
-    # We accept 200, 401 (auth required), or 403 as "accessible" for a smoke test if the server responds
+    session = get_session()
+    # Accept 200-499 as "accessible" for smoke test
+    response = session.get(url, timeout=15, allow_redirects=True)
     assert response.status_code < 500, (
         f"SysON not accessible at {url}, status: {response.status_code}"
     )
@@ -99,7 +115,8 @@ def step_then_syson_accessible(context):
 def step_then_penpot_accessible(context):
     url = get_minikube_url("sdlc-service", "penpot")
     assert url is not None, "Failed to get PenPot URL"
-    response = requests.get(url, timeout=10, allow_redirects=True)
+    session = get_session()
+    response = session.get(url, timeout=15, allow_redirects=True)
     assert response.status_code < 500, (
         f"PenPot not accessible at {url}, status: {response.status_code}"
     )
@@ -109,7 +126,8 @@ def step_then_penpot_accessible(context):
 def step_then_opencode_accessible(context):
     url = get_minikube_url("sdlc-service", "opencode")
     assert url is not None, "Failed to get OpenCode URL"
-    response = requests.get(url, timeout=10, allow_redirects=True)
+    session = get_session()
+    response = session.get(url, timeout=15, allow_redirects=True)
     assert response.status_code < 500, (
         f"OpenCode not accessible at {url}, status: {response.status_code}"
     )
