@@ -20,6 +20,6 @@ spec:
       targetPort: 8082
     - name: opencode
       protocol: TCP
-      port: 3000
+      port: 8083
       targetPort: 8083
   type: NodePort

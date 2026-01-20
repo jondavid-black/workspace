@@ -43,7 +43,7 @@ spec:
           service:
             name: sdlc-service
             port:
-              number: 3000
+              number: 8083
   - host: sdlc.local
     http:
       paths:
@@ -53,4 +53,4 @@ spec:
           service:
             name: sdlc-service
             port:
-              number: 3000
+              number: 8083
