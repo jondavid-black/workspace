@@ -28,7 +28,11 @@ spec:
         
         - name: syson
           image: python:3.12-slim
-          command: ["python", "-m", "http.server", "8081"]
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "<html><body><h1>SysON SysML v2 Engineering Baseline</h1><ul><li><a href='workspace/mbse/sdlc_pod.sysml'>Project SysML Baseline</a></li></ul></body></html>" > /data/index.html
+              cd /data && python -m http.server 8081
           ports:
             - containerPort: 8081
           volumeMounts:
