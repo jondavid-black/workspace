@@ -24,6 +24,7 @@ package SDLCPodModel {
         part penpot : PenPot;
         part vscode : VSCode;
         part opencode : OpenCode;
+        part terminal : WebTerminal;
         part storage : PersistentVolume;
         part ingress : IngressController;
 
@@ -32,12 +33,14 @@ package SDLCPodModel {
         connect penpot.storagePort to storage.accessPort;
         connect vscode.storagePort to storage.accessPort;
         connect opencode.storagePort to storage.accessPort;
+        connect terminal.storagePort to storage.accessPort;
 
         /* Connections for web access */
         connect syson.webPort to ingress.backendPort;
         connect penpot.webPort to ingress.backendPort;
         connect vscode.webPort to ingress.backendPort;
         connect opencode.webPort to ingress.backendPort;
+        connect terminal.webPort to ingress.backendPort;
     }
 
     part def SysON {
@@ -134,6 +137,14 @@ package SDLCPodModel {
         attribute runtime : String = "Node.js";
         attribute port : Integer = 8083;
         attribute ingressPath : String = "/";
+    }
+
+    part def WebTerminal {
+        port storagePort;
+        port webPort;
+        attribute image : String = "tsl0922/ttyd:latest";
+        attribute port : Integer = 8085;
+        attribute ingressPath : String = "/terminal";
     }
 
     part def IngressController {

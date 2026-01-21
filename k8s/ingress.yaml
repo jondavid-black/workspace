@@ -44,6 +44,16 @@ spec:
             name: sdlc-service
             port:
               number: 8083
+  - host: terminal.sdlc.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sdlc-service
+            port:
+              number: 8085
   - host: sdlc.local
     http:
       paths:

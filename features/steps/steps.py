@@ -128,3 +128,14 @@ def step_then_opencode_accessible_sdlc(context):
     assert response.status_code < 500, (
         f"OpenCode not accessible at {url}, status: {response.status_code}"
     )
+
+
+@then("the Web Terminal URL should be accessible")
+def step_then_terminal_accessible_sdlc(context):
+    url = get_minikube_url("sdlc-service", "ttyd")
+    assert url is not None, "Failed to get Web Terminal URL"
+    session = get_session()
+    response = session.get(url, timeout=15, allow_redirects=True)
+    assert response.status_code < 500, (
+        f"Web Terminal not accessible at {url}, status: {response.status_code}"
+    )

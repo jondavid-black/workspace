@@ -9,3 +9,4 @@ Feature: SDLC Pod Smoke Tests
     And the SysON URL should be accessible
     And the PenPot URL should be accessible
     And the OpenCode URL should be accessible
+    And the Web Terminal URL should be accessible

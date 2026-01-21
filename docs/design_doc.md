@@ -10,6 +10,7 @@ The SDLC Pod is a Kubernetes-based development environment designed to support a
 - **SysON:** Supports SysML v2 engineering baseline development.
 - **PenPot:** An open-source design and prototyping platform.
 - **OpenCode:** A unified interface for the SDLC toolset.
+- **Web Terminal (ttyd):** Provides a web-based command-line interface for shell access.
 - **Shared Persistent Storage:** A common PersistentVolumeClaim (PVC) mounted by all containers to share code and design assets.
 
 ## Systems Engineering Baseline

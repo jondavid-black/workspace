@@ -172,6 +172,16 @@ spec:
             - name: shared-data
               mountPath: /data
 
+        - name: ttyd
+          image: tsl0922/ttyd:latest
+          command: ["ttyd"]
+          args: ["-p", "8085", "bash"]
+          ports:
+            - containerPort: 8085
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+
       volumes:
         - name: shared-data
           persistentVolumeClaim:

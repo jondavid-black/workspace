@@ -22,4 +22,8 @@ spec:
       protocol: TCP
       port: 8083
       targetPort: 8083
+    - name: ttyd
+      protocol: TCP
+      port: 8085
+      targetPort: 8085
   type: NodePort

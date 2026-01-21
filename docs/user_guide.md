@@ -42,6 +42,7 @@ Since the pod is running in Minikube, you can use port-forwarding to access the 
 - **SysON:** `kubectl port-forward svc/sdlc-service 8081:8081` -> [http://localhost:8081](http://localhost:8081)
 - **PenPot:** `kubectl port-forward svc/sdlc-service 8080:8080` -> [http://localhost:8080](http://localhost:8080)
 - **OpenCode:** `kubectl port-forward svc/sdlc-service 8083:8083` -> [http://localhost:8083](http://localhost:8083)
+- **Web Terminal:** `kubectl port-forward svc/sdlc-service 8085:8085` -> [http://localhost:8085](http://localhost:8085)
 
 ## Scaling to Zero
 
