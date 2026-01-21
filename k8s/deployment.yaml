@@ -175,7 +175,7 @@ spec:
         - name: ttyd
           image: tsl0922/ttyd:latest
           command: ["ttyd"]
-          args: ["-p", "8085", "bash"]
+          args: ["-p", "8085", "-W", "bash"]
           ports:
             - containerPort: 8085
           volumeMounts:
