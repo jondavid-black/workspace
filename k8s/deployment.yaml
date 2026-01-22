@@ -17,7 +17,8 @@ spec:
       containers:
         - name: vscode
           image: codercom/code-server:latest
-          args: ["--bind-addr", "0.0.0.0:8084", "--auth", "password"]
+          args: ["--bind-addr", "0.0.0.0:8084", "--auth", "password", "/workspace"]
+          workingDir: /workspace
           ports:
             - containerPort: 8084
           env:
@@ -25,7 +26,7 @@ spec:
               value: "password"
           volumeMounts:
             - name: shared-data
-              mountPath: /home/coder/project
+              mountPath: /workspace
 
         - name: syson-db
           image: postgres:15
@@ -166,21 +167,23 @@ spec:
           image: ghcr.io/anomalyco/opencode:latest
           command: ["opencode"]
           args: ["web", "--hostname", "0.0.0.0", "--port", "8083"]
+          workingDir: /workspace
           ports:
             - containerPort: 8083
           volumeMounts:
             - name: shared-data
-              mountPath: /data
+              mountPath: /workspace
 
         - name: ttyd
           image: tsl0922/ttyd:latest
           command: ["ttyd"]
-          args: ["-p", "8085", "-W", "bash"]
+          args: ["-p", "8085", "-W", "-w", "/workspace", "bash"]
+          workingDir: /workspace
           ports:
             - containerPort: 8085
           volumeMounts:
             - name: shared-data
-              mountPath: /data
+              mountPath: /workspace
 
       volumes:
         - name: shared-data

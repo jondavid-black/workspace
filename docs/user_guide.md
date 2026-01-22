@@ -2,6 +2,15 @@
 
 This project provides a Kubernetes Pod containing a suite of containers to support the software development lifecycle.
 
+## Shared Workspace
+
+All development tools (VS Code, OpenCode, and Web Terminal) operate within a shared `/workspace` directory. This is where your git repository should be cloned. The shared persistent volume ensures that all tools see the same files and changes are preserved across pod restarts.
+
+To set up your workspace after initial deployment:
+
+1. Access the Web Terminal
+2. Clone your repository: `git clone <your-repo-url> .`
+
 ## Included Tools
 
 - **Systems Engineering:** SysON (Placeholder in prototype)
