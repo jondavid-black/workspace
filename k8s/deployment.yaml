@@ -59,6 +59,8 @@ spec:
               value: "*"
             - name: SERVER_PORT
               value: "8081"
+            - name: SERVER_ADDRESS
+              value: "0.0.0.0"
           volumeMounts:
             - name: shared-data
               mountPath: /data
@@ -166,7 +168,7 @@ spec:
         - name: opencode
           image: ghcr.io/anomalyco/opencode:latest
           command: ["opencode"]
-          args: ["web", "--hostname", "0.0.0.0", "--port", "8083"]
+          args: ["serve", "--hostname", "0.0.0.0", "--port", "8083"]
           workingDir: /workspace
           ports:
             - containerPort: 8083
@@ -177,7 +179,7 @@ spec:
         - name: ttyd
           image: tsl0922/ttyd:latest
           command: ["ttyd"]
-          args: ["-p", "8085", "-W", "-w", "/workspace", "bash"]
+          args: ["-i", "0.0.0.0", "-p", "8085", "-W", "-w", "/workspace", "bash"]
           workingDir: /workspace
           ports:
             - containerPort: 8085

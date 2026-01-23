@@ -24,7 +24,7 @@ The system is defined using SysML v2 in `mbse/sdlc_pod.sysml`. This model captur
 All containers run within a single Kubernetes Pod to ensure they share the same network namespace and can easily access the shared volume.
 
 - **Storage:** A 10Gi PVC `sdlc-shared-data` is used for persistent storage.
-- **Networking:** Each container is assigned a unique port within the pod. A NodePort Service `sdlc-service` exposes these ports to the outside world.
+- **Networking:** Each container is assigned a unique port within the pod. A NodePort Service `sdlc-service` exposes these ports to the outside world. All containers are configured to bind to `0.0.0.0` to ensure accessibility via the pod IP when using port-forwarding or ingress.
 
 ### Scale to Zero
 
@@ -39,4 +39,3 @@ Automated verification is performed using the **Behave** BDD framework. Smoke te
 - **Knative Integration:** For more seamless scale-to-zero based on traffic.
 - **Authentication:** Unified SSO for all tools.
 - **Resource Limits:** Fine-tuned CPU and memory limits for each container.
-- **Real Images:** Replacing placeholders (SysON/OpenCode) with production-ready container images as they become available.

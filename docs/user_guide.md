@@ -13,10 +13,10 @@ To set up your workspace after initial deployment:
 
 ## Included Tools
 
-- **Systems Engineering:** SysON (Placeholder in prototype)
+- **Systems Engineering:** SysON
 - **User Experience:** PenPot
 - **Software Development:** VS Code (code-server)
-- **Integration UI:** OpenCode (Placeholder in prototype)
+- **Integration UI:** OpenCode
 
 ## Prerequisites
 
