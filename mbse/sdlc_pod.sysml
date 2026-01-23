@@ -6,6 +6,10 @@ package SDLCPodModel {
         doc /* All tools must have a web-accessible front end. */
     }
 
+    requirement <'R1.1'> ProjectContext {
+        doc /* All tools must launch within the shared project directory context. */
+    }
+
     requirement <'R2'> ScaleToZero {
         doc /* The Pod must scale to zero when not in use. */
     }

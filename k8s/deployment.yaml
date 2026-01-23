@@ -168,7 +168,7 @@ spec:
         - name: opencode
           image: ghcr.io/anomalyco/opencode:latest
           command: ["opencode"]
-          args: ["serve", "--hostname", "0.0.0.0", "--port", "8083"]
+          args: ["serve", "/workspace", "--hostname", "0.0.0.0", "--port", "8083"]
           workingDir: /workspace
           ports:
             - containerPort: 8083
