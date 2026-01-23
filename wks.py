@@ -48,7 +48,9 @@ def wait_for_pod_ready(v1, timeout=300):
     print("Waiting for pod to be ready...")
     start_time = time.time()
     while time.time() - start_time < timeout:
-        pods = v1.list_namespaced_pod(namespace=NAMESPACE, label_selector=f"app={DEPLOYMENT_NAME}")
+        pods = v1.list_namespaced_pod(
+            namespace=NAMESPACE, label_selector=f"app={DEPLOYMENT_NAME}"
+        )
         if pods.items:
             pod = pods.items[0]
             if pod.status.phase == "Running":
@@ -66,7 +68,9 @@ def wait_for_pod_terminated(v1, timeout=60):
     print("Waiting for pod to terminate...")
     start_time = time.time()
     while time.time() - start_time < timeout:
-        pods = v1.list_namespaced_pod(namespace=NAMESPACE, label_selector=f"app={DEPLOYMENT_NAME}")
+        pods = v1.list_namespaced_pod(
+            namespace=NAMESPACE, label_selector=f"app={DEPLOYMENT_NAME}"
+        )
         if not pods.items:
             print("Pod terminated")
             return True
@@ -80,6 +84,7 @@ def find_kubectl():
     # Check common locations
     paths_to_check = [
         "kubectl",
+        os.path.expanduser("~/bin/kubectl"),
         "/usr/local/bin/kubectl",
         "/usr/bin/kubectl",
         os.path.expanduser("~/.local/bin/kubectl"),
@@ -89,7 +94,7 @@ def find_kubectl():
     for path in paths_to_check:
         try:
             result = subprocess.run(
-                [path, "version", "--client", "--short"],
+                [path, "version", "--client"],
                 capture_output=True,
                 timeout=5,
             )
@@ -101,7 +106,7 @@ def find_kubectl():
     # Try minikube kubectl
     try:
         result = subprocess.run(
-            ["minikube", "kubectl", "--", "version", "--client", "--short"],
+            ["minikube", "kubectl", "--", "version", "--client"],
             capture_output=True,
             timeout=5,
         )
@@ -119,7 +124,9 @@ def start_port_forwarding():
     if not kubectl:
         print("Warning: kubectl not found in PATH.")
         print("To enable port forwarding, ensure kubectl is available.")
-        print("Manual command: kubectl port-forward svc/sdlc-service 8080:8080 8081:8081 8083:8083 8084:8084 8085:8085")
+        print(
+            "Manual command: kubectl port-forward svc/sdlc-service 8080:8080 8081:8081 8083:8083 8084:8084 8085:8085"
+        )
         return None
 
     port_args = " ".join(f"{p}:{p}" for p, _ in PORTS)
@@ -185,20 +192,22 @@ def get_pod_status(v1, apps_v1):
     try:
         deployment = apps_v1.read_namespaced_deployment(DEPLOYMENT_NAME, NAMESPACE)
         replicas = deployment.spec.replicas
-    except client.exceptions.ApiException:
+    except client.ApiException:
         return None, None, None
 
     if replicas == 0:
         return "Stopped", None, None
 
     # Get pod info
-    pods = v1.list_namespaced_pod(namespace=NAMESPACE, label_selector=f"app={DEPLOYMENT_NAME}")
+    pods = v1.list_namespaced_pod(
+        namespace=NAMESPACE, label_selector=f"app={DEPLOYMENT_NAME}"
+    )
     if not pods.items:
         return "Starting", None, None
 
     pod = pods.items[0]
     containers = {}
-    for cs in (pod.status.container_statuses or []):
+    for cs in pod.status.container_statuses or []:
         containers[cs.name] = {
             "ready": cs.ready,
             "restarts": cs.restart_count,
@@ -264,7 +273,7 @@ def cmd_status():
 
     print(f"Pod Status: {status}")
 
-    if pod_name:
+    if pod_name and containers:
         print(f"Pod Name: {pod_name}")
         print()
         print("Containers:")
