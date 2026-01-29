@@ -35,6 +35,7 @@ To set up your workspace after initial deployment:
 2. Apply the Kubernetes manifests:
    ```bash
    kubectl apply -f k8s/pvc.yaml
+   kubectl apply -f k8s/collabora-ui-config.yaml
    kubectl apply -f k8s/deployment.yaml
    kubectl apply -f k8s/service.yaml
    ```
