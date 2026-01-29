@@ -165,10 +165,37 @@ spec:
             - containerPort: 1080
             - containerPort: 1025
 
+        - name: collabora-code
+          image: collabora/code:latest
+          securityContext:
+            capabilities:
+              add:
+                - FOWNER
+                - MKNOD
+                - SETGID
+                - SETUID
+                - SYS_CHROOT
+          ports:
+            - containerPort: 9980
+          env:
+            - name: extra_params
+              value: "--o:ssl.enable=false --o:ssl.termination=true --o:mount_namespaces=false"
+            - name: aliasgroup1
+              value: "http://localhost:9980"
+          volumeMounts:
+            - name: shared-data
+              mountPath: /workspace
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9980
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
         - name: opencode
           image: ghcr.io/anomalyco/opencode:latest
           command: ["opencode"]
-          args: ["serve", "/workspace", "--hostname", "0.0.0.0", "--port", "8083"]
+          args: ["web", "--hostname", "0.0.0.0", "--port", "8083"]
           workingDir: /workspace
           ports:
             - containerPort: 8083

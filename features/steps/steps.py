@@ -139,3 +139,14 @@ def step_then_terminal_accessible_sdlc(context):
     assert response.status_code < 500, (
         f"Web Terminal not accessible at {url}, status: {response.status_code}"
     )
+
+
+@then("the Collabora CODE URL should be accessible")
+def step_then_collabora_accessible_sdlc(context):
+    url = get_minikube_url("sdlc-service", "collabora")
+    assert url is not None, "Failed to get Collabora CODE URL"
+    session = get_session()
+    response = session.get(url, timeout=15, allow_redirects=True)
+    assert response.status_code < 500, (
+        f"Collabora CODE not accessible at {url}, status: {response.status_code}"
+    )
