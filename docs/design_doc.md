@@ -10,8 +10,6 @@ The SDLC Pod is a Kubernetes-based development environment designed to support a
 - **SysON:** Supports SysML v2 engineering baseline development.
 - **PenPot:** An open-source design and prototyping platform.
 - **OpenCode:** A unified interface for the SDLC toolset, serving the project context from `/workspace`.
-- **Collabora Online:** Provides a web-based office document editing UI, serving static assets and proxying requests to the backend engine.
-- **Collabora CODE Engine:** The backend service for Collabora Online, handling document logic and rendering.
 - **Web Terminal (ttyd):** Provides a web-based command-line interface for shell access, with the working directory set to `/workspace`.
 - **Shared Persistent Storage:** A common PersistentVolumeClaim (PVC) mounted by all containers to share code and design assets. All development-focused containers are configured to launch within the shared project directory context.
 

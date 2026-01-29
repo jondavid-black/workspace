@@ -26,8 +26,4 @@ spec:
       protocol: TCP
       port: 8085
       targetPort: 8085
-    - name: collabora
-      protocol: TCP
-      port: 9980
-      targetPort: 80
   type: NodePort

@@ -29,8 +29,6 @@ package SDLCPodModel {
         part vscode : VSCode;
         part opencode : OpenCode;
         part terminal : WebTerminal;
-        part collaboraCODE : CollaboraCODE;
-        part collaboraOnline : CollaboraOnlineUI;
         part storage : PersistentVolume;
         part ingress : IngressController;
 
@@ -40,8 +38,6 @@ package SDLCPodModel {
         connect vscode.storagePort to storage.accessPort;
         connect opencode.storagePort to storage.accessPort;
         connect terminal.storagePort to storage.accessPort;
-        connect collaboraCODE.storagePort to storage.accessPort;
-        connect collaboraOnline.backendPort to collaboraCODE.webPort;
 
         /* Connections for web access */
         connect syson.webPort to ingress.backendPort;
@@ -49,7 +45,6 @@ package SDLCPodModel {
         connect vscode.webPort to ingress.backendPort;
         connect opencode.webPort to ingress.backendPort;
         connect terminal.webPort to ingress.backendPort;
-        connect collaboraOnline.webPort to ingress.backendPort;
     }
 
     part def SysON {
@@ -154,21 +149,6 @@ package SDLCPodModel {
         attribute image : String = "tsl0922/ttyd:latest";
         attribute port : Integer = 8085;
         attribute ingressPath : String = "/terminal";
-    }
-
-    part def CollaboraCODE {
-        port storagePort;
-        port webPort;
-        attribute image : String = "collabora/code";
-        attribute port : Integer = 9980;
-    }
-
-    part def CollaboraOnlineUI {
-        port webPort;
-        port backendPort;
-        attribute image : String = "nginx:stable-alpine";
-        attribute port : Integer = 80;
-        attribute ingressPath : String = "/browser";
     }
 
     part def IngressController {

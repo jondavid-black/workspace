@@ -10,4 +10,3 @@ Feature: SDLC Pod Smoke Tests
     And the PenPot URL should be accessible
     And the OpenCode URL should be accessible
     And the Web Terminal URL should be accessible
-    And the Collabora CODE URL should be accessible

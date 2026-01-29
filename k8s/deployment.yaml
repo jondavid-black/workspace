@@ -165,47 +165,6 @@ spec:
             - containerPort: 1080
             - containerPort: 1025
 
-        - name: collabora-code
-          image: collabora/code:latest
-          securityContext:
-            capabilities:
-              add:
-                - FOWNER
-                - MKNOD
-                - SETGID
-                - SETUID
-                - SYS_CHROOT
-          ports:
-            - containerPort: 9980
-          env:
-            - name: extra_params
-              value: "--o:ssl.enable=false --o:ssl.termination=true --o:mount_namespaces=false"
-            - name: aliasgroup1
-              value: "http://localhost:9980"
-          volumeMounts:
-            - name: shared-data
-              mountPath: /workspace
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 9980
-            initialDelaySeconds: 30
-            periodSeconds: 10
-
-        - name: collabora-online
-          image: nginx:stable-alpine
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - name: collabora-ui-config
-              mountPath: /etc/nginx/conf.d
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 5
-            periodSeconds: 10
-
         - name: opencode
           image: ghcr.io/anomalyco/opencode:latest
           command: ["opencode"]
@@ -232,6 +191,3 @@ spec:
         - name: shared-data
           persistentVolumeClaim:
             claimName: sdlc-shared-data
-        - name: collabora-ui-config
-          configMap:
-            name: collabora-ui-config
