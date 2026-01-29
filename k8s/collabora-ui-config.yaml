@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: collabora-ui-config
+data:
+  default.conf: |
+    server {
+        listen       80;
+        server_name  localhost;
+
+        # static files
+        location /browser {
+            proxy_pass http://127.0.0.1:9980;
+            proxy_set_header Host $host;
+        }
+
+        # WOPI discovery URL
+        location /hosting/discovery {
+            proxy_pass http://127.0.0.1:9980;
+            proxy_set_header Host $host;
+        }
+
+        # main websocket
+        location ~ ^/cool/(.*)/ws$ {
+            proxy_pass http://127.0.0.1:9980;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host $host;
+            proxy_read_timeout 36000s;
+        }
+
+        # download, presentation and image upload
+        location ~ ^/(cool|browser)/ {
+            proxy_pass http://127.0.0.1:9980;
+            proxy_set_header Host $host;
+        }
+
+        # Admin Console websocket
+        location ^~ /cool/adminws {
+            proxy_pass http://127.0.0.1:9980;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host $host;
+            proxy_read_timeout 36000s;
+        }
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+    }

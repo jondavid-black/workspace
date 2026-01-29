@@ -16,7 +16,7 @@ To set up your workspace after initial deployment:
 - **Systems Engineering:** SysON
 - **User Experience:** PenPot
 - **Software Development:** VS Code (code-server)
-- **Office Documents:** Collabora CODE
+- **Office Documents:** Collabora Online
 - **Integration UI:** OpenCode
 
 ## Prerequisites
@@ -53,7 +53,7 @@ Since the pod is running in Minikube, you can use port-forwarding to access the 
 - **PenPot:** `kubectl port-forward svc/sdlc-service 8080:8080` -> [http://localhost:8080](http://localhost:8080)
 - **OpenCode:** `kubectl port-forward svc/sdlc-service 8083:8083` -> [http://localhost:8083](http://localhost:8083)
 - **Web Terminal:** `kubectl port-forward svc/sdlc-service 8085:8085` -> [http://localhost:8085](http://localhost:8085)
-- **Collabora CODE:** `kubectl port-forward svc/sdlc-service 9980:9980` -> [http://localhost:9980](http://localhost:9980)
+- **Collabora Online:** `kubectl port-forward svc/sdlc-service 9980:9980` -> [http://localhost:9980](http://localhost:9980)
 
 ## Scaling to Zero
 

@@ -192,6 +192,20 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
 
+        - name: collabora-online
+          image: nginx:stable-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: collabora-ui-config
+              mountPath: /etc/nginx/conf.d
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
         - name: opencode
           image: ghcr.io/anomalyco/opencode:latest
           command: ["opencode"]
@@ -218,3 +232,6 @@ spec:
         - name: shared-data
           persistentVolumeClaim:
             claimName: sdlc-shared-data
+        - name: collabora-ui-config
+          configMap:
+            name: collabora-ui-config

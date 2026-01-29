@@ -29,5 +29,5 @@ spec:
     - name: collabora
       protocol: TCP
       port: 9980
-      targetPort: 9980
+      targetPort: 80
   type: NodePort
